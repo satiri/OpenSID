@@ -43,7 +43,7 @@
  * @link 	https://github.com/OpenSID/OpenSID
  */
 
-class Migrasi_2101_ke_2102.php extends MY_model {
+class Migrasi_2101_ke_2102 extends MY_model {
 
 	public function up()
 	{
