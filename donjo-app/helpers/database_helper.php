@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Menghasilkan csv dari data tabel
  * Baris pertama berisi nama kolom
@@ -66,4 +65,3 @@ function duplicate_key_update_str($data)
 	$update_str = ' ON DUPLICATE KEY UPDATE ' . rtrim($update_str, ', ');
 	return $update_str;
 }
-?>
