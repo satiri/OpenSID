@@ -48,11 +48,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Mandiri_web extends Mandiri_Controller
 {
 	private $header;
+	private $models = [
+		'header_model',
+		'web_dokumen_model',
+		'surat_model', 
+		'penduduk_model',
+		'keluar_model',
+		'permohonan_surat_model',
+		'mailbox_model',
+		'penduduk_model',
+		'lapor_model',
+		'keluarga_model',
+		'referensi_model'
+	];
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model(['header_model', 'web_dokumen_model', 'surat_model', 'penduduk_model', 'keluar_model', 'permohonan_surat_model', 'mailbox_model', 'penduduk_model', 'lapor_model', 'keluarga_model', 'referensi_model']);
+		$this->load->model($this->models);
 		$this->load->helper('download');
 		$this->header = $this->header_model->get_data();
 	}
@@ -186,16 +199,22 @@ class Mandiri_web extends Mandiri_Controller
 			$row[] = $no;
 			$row[] = $baris['ref_syarat_nama'];
 			// Gunakan view sebagai string untuk mempermudah pembuatan pilihan
-			$pilihan_dokumen = $this->load->view('web/mandiri/pilihan_syarat.php', array('dokumen' => $dokumen, 'syarat_permohonan' => $syarat_permohonan, 'syarat_id' => $baris['ref_syarat_id']), TRUE);
+			$viewData = [
+				'dokumen' => $dokumen,
+				'syarat_permohonan' => $syarat_permohonan,
+				'syarat_id' => $baris['ref_syarat_id']
+			];
+			$pilihan_dokumen = $this->load->view('web/mandiri/pilihan_syarat.php', $viewData, TRUE);
 			$row[] = $pilihan_dokumen;
 			$data[] = $row;
 		}
 
-		$output = array(
+		$output = [
 			"recordsTotal" => 10,
 			"recordsFiltered" => 10,
 			'data' => $data
-		);
+		];
+
 		echo json_encode($output);
 	}
 
@@ -236,6 +255,10 @@ class Mandiri_web extends Mandiri_Controller
 		$this->session->unset_userdata('error_msg');
 		$success_msg = 'Berhasil menyimpan data';
 
+		// default
+		$data['success'] = -1;
+		$data['message'] = 'Anda tidak mempunyai hak akses itu';
+
 		if ($_SESSION['id'])
 		{
 			$_POST['id_pend'] = $this->session->id;
@@ -258,11 +281,6 @@ class Mandiri_web extends Mandiri_Controller
 			}
 			$data['success'] = $this->session->success;
 			$data['message'] = $data['success'] == -1 ? $this->session->error_msg : $success_msg;
-		}
-		else
-		{
-			$data['success'] = -1;
-			$data['message'] = 'Anda tidak mempunyai hak akses itu';
 		}
 
 		echo json_encode($data);
