@@ -97,47 +97,50 @@
 	}
 
 	public function insert()
-  {
-    if ($_POST['nik'] == "")
-    {
-        redirect("mandiri");
-    }
-    if (empty($_POST['pin']))
-    {
-    	$rpin = $this->generate_pin($_POST['pin']);
-    }
-    else
-    {
-	    // load library form_validation
-	    $this->load->library('form_validation');
-	    $this->form_validation->set_rules('pin', 'Pin', 'trim|numeric|required|min_length[6]|max_length[6]');
-	    if ($this->form_validation->run() !== true)
-	    {
-	    	$_SESSION['success'] = -1;
+	{
+		if ($_POST['nik'] == "")
+		{
+			redirect("mandiri");
+		}
+
+		if (empty($_POST['pin']))
+		{
+			$rpin = $this->generate_pin($_POST['pin']);
+		}
+		else
+		{
+			// load library form_validation
+			$this->load->library('form_validation');
+			$this->form_validation->set_rules('pin', 'Pin', 'trim|numeric|required|min_length[6]|max_length[6]');
+			if ($this->form_validation->run() !== true)
+			{
+				$_SESSION['success'] = -1;
 				$_SESSION['error_msg'] = 'PIN harus 6 (enam) digit angka.';
 				redirect('mandiri');
-	    }
-	    $rpin = $_POST['pin'];
-    }
+			}
 
-    $sql = "DELETE FROM tweb_penduduk_mandiri
+			$rpin = $_POST['pin'];
+		}
+
+		$sql = "DELETE FROM tweb_penduduk_mandiri
 				WHERE id_pend = (SELECT id FROM tweb_penduduk WHERE strcmp(nik, ?) = 0)";
-    $outp = $this->db->query($sql, array($_POST['nik']));
-    $hash_pin = hash_pin($rpin);
-    $data['pin'] = $hash_pin;
-    $data['id_pend'] = $this->db->select('id')->where('nik', $_POST['nik'])
-        ->get('tweb_penduduk')->row()->id;
-    $data['tanggal_buat'] = date("Y-m-d H:i:s");
-    $outp = $this->db->insert('tweb_penduduk_mandiri', $data);
-    if ($_POST['pin'] != "")
-    {
-      return $_POST['pin'];
-    }
-    else
-    {
-      return $rpin;
-    }
-  }
+		$outp = $this->db->query($sql, array($_POST['nik']));
+		$hash_pin = hash_pin($rpin);
+		$data['pin'] = $hash_pin;
+		$data['id_pend'] = $this->db->select('id')->where('nik', $_POST['nik'])
+			->get('tweb_penduduk')->row()->id;
+		$data['tanggal_buat'] = date("Y-m-d H:i:s");
+		$outp = $this->db->insert('tweb_penduduk_mandiri', $data);
+
+		if ($_POST['pin'] != "")
+		{
+			return $_POST['pin'];
+		}
+		else
+		{
+			return $rpin;
+		}
+	}
 
 	public function delete($id_pend='', $semua=false)
 	{
@@ -271,11 +274,11 @@
 		}
 
 		$hash_pin = hash_pin($rpin);
-  	$data['pin'] = $hash_pin;
+		$data['pin'] = $hash_pin;
 		$data['tanggal_buat'] = date("Y-m-d H:i:s");
 		$this->db->where('id_pend', $id_pend);
 		$this->db->update('tweb_penduduk_mandiri', $data);	
 
-    return $rpin;
+		return $rpin;
 	}
 }
